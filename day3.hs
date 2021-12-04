@@ -14,6 +14,7 @@ binaryToInt :: Binary -> Int
 binaryToInt Zero = 0
 binaryToInt One = 1
 
+-- TODO: consolidate with higher order function
 mostCommon :: [Binary] -> Binary
 mostCommon nums = mostCommon' (0, 0) nums
   where
