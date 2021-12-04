@@ -12,12 +12,14 @@ import Data.List.Split
 data Direction = Forward | Down | Up deriving (Show)
 data Command = Command { direction :: Direction, count_ :: Int }
 
+-- bad readsPrec impl, not abiding by the rules
 instance Read Direction where
   readsPrec _ input
     | input == "forward" = [(Forward, "")]
     | input == "down" = [(Down, "")]
     | input == "up" = [(Up, "")]
 
+-- fix this one up too
 instance Read Command where
   readsPrec _ input = [(Command { direction = read (parts !! 0) :: Direction, count_ = read (parts !! 1) :: Int }, "")]
     where parts = splitOn " " input
