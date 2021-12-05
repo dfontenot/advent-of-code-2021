@@ -35,11 +35,15 @@ oxygenRating :: Matrix -> V.Vector Int
 oxygenRating mat_ = oxygenRating' mat_ ((V.length (mat_ V.! 0)), 0)
   where
     oxygenRating' mat _ | (V.length mat) == 1 = mat V.! 0
-    --oxygenRating' _ (len, pos) | pos >= len = error $ "ran out of iterations: " ++ pos
+    --oxygenRating' _ (len, pos) | pos >= len = error $ "ran out of iterations: " ++ pos -- TODO: fix
     oxygenRating' mat (len, pos) = let bitRequired = mostCommonBit mat pos in oxygenRating' ((V.filter (filterByBit pos bitRequired)) mat) (len, pos + 1)
+
+vecToNumber :: V.Vector Int -> Int
+vecToNumber v = getFirst $ V.foldr (\bit (sum_, exp_) -> (sum_ + bit * 2 ^ exp_, exp_ + 1)) ((0, 0) :: (Int, Int)) v
+  where
+    getFirst (sum_, _) = sum_
 
 main :: IO ()
 main = do
   textData <- readFile "day3.txt"
-  --putStrLn $ show $ make2DVector $ filter (/= "") $ lines textData
-  putStrLn $ show $ oxygenRating $ make2DVector $ filter (/= "") $ lines textData
+  putStrLn $ show $ vecToNumber $ oxygenRating $ make2DVector $ filter (/= "") $ lines textData
