@@ -31,12 +31,18 @@ mostCommonBit mat bitPos = vertBitSelector mat bitPos (\z o -> if z > o then 0 e
 leastCommonBit :: Matrix -> Int -> Int
 leastCommonBit mat bitPos = vertBitSelector mat bitPos (\z o -> if z > o then 1 else 0)
 
-oxygenRating :: Matrix -> V.Vector Int
-oxygenRating mat_ = oxygenRating' mat_ ((V.length (mat_ V.! 0)), 0)
+findRating :: Matrix -> (Matrix -> Int -> Int) -> V.Vector Int
+findRating mat_ fnc_ = findRating' mat_ fnc_ ((V.length (mat_ V.! 0)), 0)
   where
-    oxygenRating' mat _ | (V.length mat) == 1 = mat V.! 0
-    --oxygenRating' _ (len, pos) | pos >= len = error $ "ran out of iterations: " ++ pos -- TODO: fix
-    oxygenRating' mat (len, pos) = let bitRequired = mostCommonBit mat pos in oxygenRating' ((V.filter (filterByBit pos bitRequired)) mat) (len, pos + 1)
+    findRating' mat _ _ | (V.length mat) == 1 = mat V.! 0
+    --findRating' _ _ (len, pos) | pos >= len = error $ "ran out of iterations: " ++ pos -- TODO: fix
+    findRating' mat fnc (len, pos) = let bitRequired = fnc mat pos in findRating' ((V.filter (filterByBit pos bitRequired)) mat) fnc (len, pos + 1)
+
+oxygenRating :: Matrix -> V.Vector Int
+oxygenRating mat = findRating mat mostCommonBit
+
+co2ScrubberRating :: Matrix -> V.Vector Int
+co2ScrubberRating mat = findRating mat leastCommonBit
 
 vecToNumber :: V.Vector Int -> Int
 vecToNumber v = getFirst $ V.foldr (\bit (sum_, exp_) -> (sum_ + bit * 2 ^ exp_, exp_ + 1)) ((0, 0) :: (Int, Int)) v
@@ -46,4 +52,6 @@ vecToNumber v = getFirst $ V.foldr (\bit (sum_, exp_) -> (sum_ + bit * 2 ^ exp_,
 main :: IO ()
 main = do
   textData <- readFile "day3.txt"
-  putStrLn $ show $ vecToNumber $ oxygenRating $ make2DVector $ filter (/= "") $ lines textData
+  let matrix = make2DVector $ filter (/= "") $ lines textData in
+      let oxygenRatingNumber = vecToNumber $ oxygenRating $ matrix in
+          let co2ScrubberRatingNumber = vecToNumber $ co2ScrubberRating $ matrix in putStrLn $ show $ oxygenRatingNumber * co2ScrubberRatingNumber
