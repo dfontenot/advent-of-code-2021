@@ -22,14 +22,19 @@ filterByBit bitPos bitRequired vec = (vec V.! bitPos) == bitRequired
 vertBitSelector :: Matrix -> Int -> (Int -> Int -> Int) -> Int
 vertBitSelector mat_ bitPos_ selector_ = vertBitSelector' mat_ bitPos_ 0 (0, 0) selector_
   where
-    vertBitSelector' mat _ pos (zeroes, ones) selector | pos == (length mat) - 1 = selector zeroes ones
+    vertBitSelector' mat _ pos (zeroes, ones) selector | pos == (V.length mat) - 1 = selector zeroes ones
     vertBitSelector' mat bitPos pos (zeroes, ones) selector = if ((mat V.! pos) V.! bitPos) == 1 then vertBitSelector' mat bitPos (pos + 1) (zeroes, ones + 1) selector else vertBitSelector' mat bitPos (pos + 1) (zeroes + 1, ones) selector
 
 mostCommonBit :: Matrix -> Int -> Int
 mostCommonBit mat bitPos = vertBitSelector mat bitPos (\z o -> if z > o then 0 else 1)
 
 leastCommonBit :: Matrix -> Int -> Int
-leastCommonBit mat bitPos = vertBitSelector mat bitPos (\z o -> if z > o then 1 else 0)
+--leastCommonBit mat bitPos = vertBitSelector mat bitPos (\z o -> if z > o then 1 else 0)
+leastCommonBit mat bitPos = vertBitSelector mat bitPos selector
+  where
+    selector zeroes _ | zeroes == 0 = 1
+    selector _ ones | ones == 0 = 0
+    selector zeroes ones = if zeroes > ones then 1 else 0
 
 findRating :: Matrix -> (Matrix -> Int -> Int) -> V.Vector Int
 findRating mat_ fnc_ = findRating' mat_ fnc_ ((V.length (mat_ V.! 0)), 0)
