@@ -8,8 +8,22 @@ ghc-options: -Wall
 
 dependencies:
   - base
+  - split
   - vector
 
-executable:
-  main: day1.hs
-  source-dirs: .
+executables:
+  day1:
+    main: day1.hs
+    source-dirs: .
+
+  day2:
+    main: day2.hs
+    source-dirs: .
+
+  day3:
+    main: day3.hs
+    source-dirs: .
+
+  day3part2:
+    main: day3-part2.hs
+    source-dirs: .

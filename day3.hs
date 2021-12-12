@@ -1,4 +1,4 @@
-module Day3 where
+module Main where
 
 data Binary = One | Zero deriving (Show)
 

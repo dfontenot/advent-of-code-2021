@@ -4,7 +4,7 @@
  --package "vector"
  --ghc-options -Wall
 -}
-module Day3 where
+module Main where
 
 import qualified Data.Vector as V
 

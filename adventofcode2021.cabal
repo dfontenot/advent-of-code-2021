@@ -11,7 +11,7 @@ description:    solutions
 maintainer:     David Fontenot
 build-type:     Simple
 
-executable adventofcode2021
+executable day1
   main-is: day1.hs
   other-modules:
       Paths_adventofcode2021
@@ -20,5 +20,45 @@ executable adventofcode2021
   ghc-options: -Wall
   build-depends:
       base
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day2
+  main-is: day2.hs
+  other-modules:
+      Paths_adventofcode2021
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall
+  build-depends:
+      base
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day3
+  main-is: day3.hs
+  other-modules:
+      Paths_adventofcode2021
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall
+  build-depends:
+      base
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day3part2
+  main-is: day3-part2.hs
+  other-modules:
+      Paths_adventofcode2021
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall
+  build-depends:
+      base
+    , split
     , vector
   default-language: Haskell2010

@@ -5,7 +5,7 @@
  --ghc-options -Wall
 -}
 
-module Day2 where
+module Main where
 
 import Data.List.Split
 
