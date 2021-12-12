@@ -1,0 +1,15 @@
+name: adventofcode2021
+version: 0.0.1
+synopsis: advent of code 2021 solutions
+description: solutions
+maintainer: David Fontenot
+
+ghc-options: -Wall
+
+dependencies:
+  - base
+  - vector
+
+executable:
+  main: day1.hs
+  source-dirs: .
