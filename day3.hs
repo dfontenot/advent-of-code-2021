@@ -40,8 +40,8 @@ getEpsilonBits = calculateBits leastCommon
 readBinaryBits :: [Binary] -> Int
 readBinaryBits lst = readBinaryBits' (0, 0) $ reverseList lst
   where
-    readBinaryBits' (sum, _) [] = sum
-    readBinaryBits' (sum, exp) (x:xs) = readBinaryBits' (sum + (binaryToInt x) * 2 ^ exp, exp + 1) xs
+    readBinaryBits' (sum_, _) [] = sum_
+    readBinaryBits' (sum_, exp_) (x:xs) = readBinaryBits' (sum_ + (binaryToInt x) * 2 ^ exp_, exp_ + 1) xs
 
 main :: IO ()
 main = do
