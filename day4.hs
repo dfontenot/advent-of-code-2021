@@ -1,7 +1,9 @@
+--{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 module Main where
 
 import qualified Data.Vector as V
 
+import Data.List
 import Text.Parsec.String (Parser)
 import Text.ParserCombinators.Parsec hiding (many)
 import Text.Parsec.Combinator (many1)
@@ -10,20 +12,17 @@ import Text.Parsec.Char (digit, oneOf, char)
 import Control.Applicative ((<$>), (<*>), (<*), many, (<$), (<|>))
 import Control.Monad (void)
 
-type Matrix = V.Vector (V.Vector Integer)
-type Parsed = ([Integer], [Matrix])
+newtype Matrix = Matrix (V.Vector (V.Vector Integer))
+newtype Parsed = Parsed ([Integer], [Matrix])
 
--- remainingBingoLine :: GenParser Char st [Int]
--- remainingBingoLine = (char ',' >> bingoLine) <|> (return [])
---
--- bingoLine :: GenParser Char st [Int]
--- bingoLine = do
---   first <- bingoNumber
---   next <- remainingBingoLine
---   return (first : next)
---
--- bingoNumber :: GenParser Char st Int
--- bingoNumber = read <$> many $ noneOf ",\n"
+instance Show Parsed where
+  show (Parsed (bingoNumbers, cards)) = show bingoNumbers ++ "\n" ++ (intercalate "\n\n" (map show cards))
+
+instance Show Matrix where
+  show (Matrix lines) = "----\n" ++ (intercalate "\n" listLines) ++ "\n----"
+    where
+      listLines = V.toList $ V.map (\line -> intercalate " " (listLine line)) lines
+      listLine line = V.toList $ V.map show line
 
 whitespace :: Parser ()
 whitespace = void $ oneOf " \n\t"
@@ -49,7 +48,7 @@ bingoCard :: Parser Matrix
 bingoCard = do
   lines <- bingoLine `sepBy` (char '\n')
   whitespace
-  return $ V.fromList lines
+  return $ Matrix $ V.fromList lines
 
 bingoFile :: Parser Parsed
 bingoFile = do
@@ -57,7 +56,7 @@ bingoFile = do
   header <- integer `sepBy` (char ',')
   whitespace
   bingoCards <- bingoCard `sepBy` (char '\n')
-  return (header, bingoCards)
+  return $ Parsed (header, bingoCards)
   --skipMany1 $ char '\n'
 
 parseInput :: String -> Either ParseError Parsed

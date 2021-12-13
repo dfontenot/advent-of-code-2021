@@ -32,4 +32,5 @@ executables:
   day4:
     main: day4.hs
     source-dirs: .
+    #ghc-options: [-XTypeSynonymInstances]
 
