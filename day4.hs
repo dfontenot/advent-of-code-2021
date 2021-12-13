@@ -39,10 +39,10 @@ integer = read <$> many1 digit
 
 commaSep p  = p `sepBy` (symbol ',')
 
-bingoLine :: Parser (V.Vetor Integer)
+bingoLine :: Parser (V.Vector Integer)
 bingoLine = do
   void $ many $ (char ' ')
-  nums <- integer `sepBy` (many (char ' '))
+  nums <- integer `sepBy` (many1 (char ' '))
   return $ V.fromList nums
 
 bingoCard :: Parser Matrix
@@ -55,8 +55,8 @@ bingoFile :: Parser Parsed
 bingoFile = do
   --header <- commaSep integer
   header <- integer `sepBy` (char ',')
-  many1 whitespace
-  bingoCards <- bingoCard `sepBy` (many1 (char '\n'))
+  many1 $ char '\n'
+  bingoCards <- bingoCard `sepBy` (string "\n\n")
   return $ Parsed {bingoNumbers=header, bingoCards=bingoCards}
   --skipMany1 $ char '\n'
 
