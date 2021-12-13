@@ -19,9 +19,9 @@ instance Show Parsed where
   show (Parsed {bingoNumbers=calledNumbers, bingoCards=cards}) = show calledNumbers ++ "\n" ++ (intercalate "\n\n" (map show cards))
 
 instance Show Matrix where
-  show (Matrix lines) = "----\n" ++ (intercalate "\n" listLines) ++ "\n----"
+  show (Matrix lines_) = "----\n" ++ (intercalate "\n" listLines) ++ "\n----"
     where
-      listLines = V.toList $ V.map (\line -> intercalate " " (listLine line)) lines
+      listLines = V.toList $ V.map (\line -> intercalate " " (listLine line)) lines_
       listLine line = if (null line) then ["(empty line)"] else V.toList $ V.map show line
 
 whitespace :: Parser ()
@@ -41,23 +41,23 @@ commaSep p  = p `sepBy` (symbol ',')
 
 bingoLine :: Parser (V.Vector Integer)
 bingoLine = do
-  void $ many $ (char ' ')
+  void $ many $ char ' '
   nums <- integer `sepBy` (many1 (char ' '))
   return $ V.fromList nums
 
 bingoCard :: Parser Matrix
 bingoCard = do
-  lines <- bingoLine `sepBy` (char '\n')
+  lines_ <- bingoLine `sepBy` (char '\n')
   --whitespace
-  return $ Matrix $ V.fromList lines
+  return $ Matrix $ V.fromList lines_
 
 bingoFile :: Parser Parsed
 bingoFile = do
   --header <- commaSep integer
   header <- integer `sepBy` (char ',')
-  many1 $ char '\n'
-  bingoCards <- bingoCard `sepBy` (string "\n\n")
-  return $ Parsed {bingoNumbers=header, bingoCards=bingoCards}
+  _ <- many1 $ char '\n'
+  bingoCards_ <- bingoCard `sepBy` (string "\n\n")
+  return $ Parsed {bingoNumbers=header, bingoCards=bingoCards_}
   --skipMany1 $ char '\n'
 
 parseInput :: String -> Either ParseError Parsed
