@@ -13,10 +13,10 @@ import Control.Applicative ((<$>), (<*>), (<*), many, (<$), (<|>))
 import Control.Monad (void)
 
 newtype Matrix = Matrix (V.Vector (V.Vector Integer))
-newtype Parsed = Parsed ([Integer], [Matrix])
+data Parsed = Parsed { bingoNumbers :: [Integer], bingoCards :: [Matrix] }
 
 instance Show Parsed where
-  show (Parsed (bingoNumbers, cards)) = show bingoNumbers ++ "\n" ++ (intercalate "\n\n" (map show cards))
+  show (Parsed {bingoNumbers=calledNumbers, bingoCards=cards}) = show calledNumbers ++ "\n" ++ (intercalate "\n\n" (map show cards))
 
 instance Show Matrix where
   show (Matrix lines) = "----\n" ++ (intercalate "\n" listLines) ++ "\n----"
@@ -56,7 +56,7 @@ bingoFile = do
   header <- integer `sepBy` (char ',')
   whitespace
   bingoCards <- bingoCard `sepBy` (char '\n')
-  return $ Parsed (header, bingoCards)
+  return $ Parsed {bingoNumbers=header, bingoCards=bingoCards}
   --skipMany1 $ char '\n'
 
 parseInput :: String -> Either ParseError Parsed
