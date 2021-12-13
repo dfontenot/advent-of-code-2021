@@ -1,33 +1,56 @@
 module Main where
 
 import qualified Data.Vector as V
+
+import Text.Parsec.String (Parser)
 import Text.ParserCombinators.Parsec
+import Text.Parsec.Combinator (many1)
+import Text.Parsec.Char (digit, oneOf, char)
 
-type Matrix = V.Vector (V.Vector Int)
-type Parsed = ([Int], [Matrix])
+import Control.Applicative ((<$>), (<*>), (<*), many, (<$), (<|>))
+import Control.Monad (void)
 
-remainingBingoLine :: GenParser Char st [Int]
-remainingBingoLine = (char ',' >> bingoLine) <|> (return [])
+type Matrix = V.Vector (V.Vector Integer)
+type Parsed = ([Integer], [Matrix])
 
-bingoLine :: GenParser Char st [Int]
-bingoLine = do
-  first <- bingoNumber
-  next <- remainingBingoLine
-  return (first : next)
+-- remainingBingoLine :: GenParser Char st [Int]
+-- remainingBingoLine = (char ',' >> bingoLine) <|> (return [])
+--
+-- bingoLine :: GenParser Char st [Int]
+-- bingoLine = do
+--   first <- bingoNumber
+--   next <- remainingBingoLine
+--   return (first : next)
+--
+-- bingoNumber :: GenParser Char st Int
+-- bingoNumber = read <$> many $ noneOf ",\n"
 
-bingoNumber :: GenParser Char st Int
-bingoNumber = read <$> many $ noneOf ",\n"
+whitespace :: Parser ()
+whitespace = void $ oneOf " \n\t"
+
+lexeme :: Parser a -> Parser a
+lexeme p = p <* whitespace
+
+symbol :: Char -> Parser Char
+symbol c = lexeme $ char c
+
+integer :: Parser Integer
+--integer = read <$> lexeme (many1 digit)
+integer = read <$> many1 digit
+
+commaSep p  = p `sepBy` (symbol ',')
 
 --bingoFile :: GenParser Char st Parsed
-bingoFile :: GenParser Char st [Int]
+bingoFile :: GenParser Char () [Integer]
 bingoFile = do
-  header <- bingoLine
+  --header <- commaSep integer
+  header <- integer `sepBy` (char ',')
   return header
   --skipMany1 $ char '\n'
 
 --parseInput :: String -> Either ParseError Parsed
-parseInput :: String -> Either ParseError [Int]
-parseInput input = parse bingoFile "" input
+parseInput :: String -> Either ParseError [Integer]
+parseInput input = parse bingoFile "day4.txt" input -- 2nd arg is just the filename to use in parseerror s
 
 main :: IO ()
 main = do
