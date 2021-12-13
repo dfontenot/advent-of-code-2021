@@ -22,7 +22,7 @@ instance Show Matrix where
   show (Matrix lines) = "----\n" ++ (intercalate "\n" listLines) ++ "\n----"
     where
       listLines = V.toList $ V.map (\line -> intercalate " " (listLine line)) lines
-      listLine line = V.toList $ V.map show line
+      listLine line = if (null line) then ["(empty line)"] else V.toList $ V.map show line
 
 whitespace :: Parser ()
 whitespace = void $ oneOf " \n\t"
