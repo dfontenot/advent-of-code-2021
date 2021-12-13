@@ -3,7 +3,7 @@ module Main where
 import qualified Data.Vector as V
 
 import Text.Parsec.String (Parser)
-import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec hiding (many)
 import Text.Parsec.Combinator (many1)
 import Text.Parsec.Char (digit, oneOf, char)
 
@@ -40,16 +40,27 @@ integer = read <$> many1 digit
 
 commaSep p  = p `sepBy` (symbol ',')
 
---bingoFile :: GenParser Char st Parsed
-bingoFile :: GenParser Char () [Integer]
+bingoLine :: Parser (V.Vector Integer)
+bingoLine = do
+  nums <- integer `sepBy` (many (char ' '))
+  return $ V.fromList nums
+
+bingoCard :: Parser Matrix
+bingoCard = do
+  lines <- bingoLine `sepBy` (char '\n')
+  whitespace
+  return $ V.fromList lines
+
+bingoFile :: Parser Parsed
 bingoFile = do
   --header <- commaSep integer
   header <- integer `sepBy` (char ',')
-  return header
+  whitespace
+  bingoCards <- bingoCard `sepBy` (char '\n')
+  return (header, bingoCards)
   --skipMany1 $ char '\n'
 
---parseInput :: String -> Either ParseError Parsed
-parseInput :: String -> Either ParseError [Integer]
+parseInput :: String -> Either ParseError Parsed
 parseInput input = parse bingoFile "day4.txt" input -- 2nd arg is just the filename to use in parseerror s
 
 main :: IO ()
