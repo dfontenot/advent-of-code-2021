@@ -20,6 +20,7 @@ executable day1
   ghc-options: -Wall
   build-depends:
       base
+    , parsec
     , split
     , vector
   default-language: Haskell2010
@@ -33,6 +34,7 @@ executable day2
   ghc-options: -Wall
   build-depends:
       base
+    , parsec
     , split
     , vector
   default-language: Haskell2010
@@ -46,6 +48,7 @@ executable day3
   ghc-options: -Wall
   build-depends:
       base
+    , parsec
     , split
     , vector
   default-language: Haskell2010
@@ -59,6 +62,21 @@ executable day3part2
   ghc-options: -Wall
   build-depends:
       base
+    , parsec
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day4
+  main-is: day4.hs
+  other-modules:
+      Paths_adventofcode2021
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall
+  build-depends:
+      base
+    , parsec
     , split
     , vector
   default-language: Haskell2010

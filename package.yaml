@@ -8,6 +8,7 @@ ghc-options: -Wall
 
 dependencies:
   - base
+  - parsec
   - split
   - vector
 
@@ -27,3 +28,8 @@ executables:
   day3part2:
     main: day3-part2.hs
     source-dirs: .
+
+  day4:
+    main: day4.hs
+    source-dirs: .
+
