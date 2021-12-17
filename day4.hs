@@ -9,7 +9,7 @@ import Text.ParserCombinators.Parsec hiding (many)
 import Text.Parsec.Combinator (many1)
 import Text.Parsec.Char (digit, oneOf, char)
 
-import Control.Applicative ((<$>), (<*>), (<*), many, (<$), (<|>))
+import Control.Applicative ((<$>), (<*>), (<*), many, (<$))
 import Control.Monad (void)
 
 newtype Matrix = Matrix (V.Vector (V.Vector Integer))
@@ -45,18 +45,34 @@ bingoLine = do
   nums <- integer `sepBy` (many1 (char ' '))
   return $ V.fromList nums
 
-bingoCard :: Parser Matrix
+bingoCard :: Parser [Matrix]
 bingoCard = do
-  lines_ <- bingoLine `sepBy` (char '\n')
+  lines_ <- (bingoLine `sepBy1` (char '\n')) `endBy` string "\n\n"
+  --lines_ <- (bingoLine `endBy` string "\n\n") `sepBy1` char '\n'
+  --lines_ :: () -- lines_ is [[V.Vector Integer]]
+  -- -- TODO: there has to be a better way...
+  -- line1 <- bingoLine `sepBy` char '\n'
+  -- line2 <- bingoLine `sepBy` char '\n'
+  -- line3 <- bingoLine `sepBy` char '\n'
+  -- line4 <- bingoLine `sepBy` char '\n'
+  -- line5 <- bingoLine `sepBy` char '\n'
+  _ <- many1 $ char '\n'
+  --lines_ <- manyTill bingoLine (try (string "\n\n"))
+  --lines_ <- bingoLine `sepBy` (char '\n')
   --whitespace
-  return $ Matrix $ V.fromList lines_
+  --return $ Matrix (V.fromList lines_)
+  --return $ Matrix [V.fromList [V.fromList [1,2]]]
+  return $ map (\card -> Matrix $ V.fromList card) lines_
+    -- where
+    --   matrixify matrix = Matrix $ map V.fromList matrix
 
 bingoFile :: Parser Parsed
 bingoFile = do
   --header <- commaSep integer
   header <- integer `sepBy` (char ',')
   _ <- many1 $ char '\n'
-  bingoCards_ <- bingoCard `sepBy` (string "\n\n")
+  --bingoCards_ <- bingoCard `sepBy` (string "\n\n")
+  bingoCards_ <- bingoCard
   return $ Parsed {bingoNumbers=header, bingoCards=bingoCards_}
   --skipMany1 $ char '\n'
 
