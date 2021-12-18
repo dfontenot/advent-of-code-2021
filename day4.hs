@@ -3,6 +3,7 @@ module Main where
 
 import qualified Data.Vector as V
 
+import Debug.Trace
 import Data.List
 import Text.Parsec.String (Parser)
 import Text.ParserCombinators.Parsec hiding (many)
@@ -85,7 +86,7 @@ bingoCards' = do
   rstMat <- rstBingoCards
   return (mat:rstMat)
     where
-      rstBingoCards = ((many1 (char '\n')) >> bingoCards') <|> (return [])
+      rstBingoCards = try ((many1 (char '\n')) >> bingoCards') <|> (return (trace "base case" []))
 
 bingoFile :: Parser Parsed
 bingoFile = do
@@ -94,7 +95,7 @@ bingoFile = do
   _ <- many1 $ char '\n'
   --bingoCards_ <- bingoCard' `sepBy` (string "\n\n")
   --bingoCards_ <- bingoCard' `sepBy` (string "\n\n")
-  bingoCards_ <- bingoCards'
+  bingoCards_ <- (trace "bingo" bingoCards')
   skipMany $ char '\n'
   --_ <- many $ char '\n'
   eof
