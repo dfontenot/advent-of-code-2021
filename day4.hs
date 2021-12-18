@@ -58,7 +58,6 @@ bingoCard' = do
   line5 <- bingoLine
   return $ Matrix $ V.fromList [line1, line2, line3, line4, line5]
 
-
 bingoCard :: Parser [Matrix]
 bingoCard = do
   lines_ <- (bingoLine `sepBy1` (char '\n')) `endBy` string "\n\n"
@@ -80,12 +79,25 @@ bingoCard = do
     -- where
     --   matrixify matrix = Matrix $ map V.fromList matrix
 
+bingoCards' :: Parser [Matrix]
+bingoCards' = do
+  mat <- bingoCard'
+  rstMat <- rstBingoCards
+  return (mat:rstMat)
+    where
+      rstBingoCards = ((many1 (char '\n')) >> bingoCards') <|> (return [])
+
 bingoFile :: Parser Parsed
 bingoFile = do
   --header <- commaSep integer
   header <- integer `sepBy` (char ',')
   _ <- many1 $ char '\n'
-  bingoCards_ <- bingoCard' `sepBy` (string "\n\n")
+  --bingoCards_ <- bingoCard' `sepBy` (string "\n\n")
+  --bingoCards_ <- bingoCard' `sepBy` (string "\n\n")
+  bingoCards_ <- bingoCards'
+  skipMany $ char '\n'
+  --_ <- many $ char '\n'
+  eof
   --bingoCards_ <- bingoCard
   return $ Parsed {bingoNumbers=header, bingoCards=bingoCards_}
   --skipMany1 $ char '\n'
