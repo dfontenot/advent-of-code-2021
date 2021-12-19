@@ -20,6 +20,7 @@ executable day1
   ghc-options: -Wall
   build-depends:
       base
+    , mtl
     , parsec
     , split
     , vector
@@ -34,6 +35,7 @@ executable day2
   ghc-options: -Wall
   build-depends:
       base
+    , mtl
     , parsec
     , split
     , vector
@@ -48,6 +50,7 @@ executable day3
   ghc-options: -Wall
   build-depends:
       base
+    , mtl
     , parsec
     , split
     , vector
@@ -62,6 +65,7 @@ executable day3part2
   ghc-options: -Wall
   build-depends:
       base
+    , mtl
     , parsec
     , split
     , vector
@@ -76,6 +80,7 @@ executable day4
   ghc-options: -Wall
   build-depends:
       base
+    , mtl
     , parsec
     , split
     , vector
