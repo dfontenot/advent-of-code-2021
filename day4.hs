@@ -87,9 +87,11 @@ initialGamestate (Parsed {bingoNumbers=_, bingoCards=cards}) = map matToCells ca
   where
     matToCells (Matrix mat) = Matrix $ V.map (\row -> V.map (\num -> Cell { cellNum=num, cellMarked=False }) row) mat
 
--- matScan :: Matrix Cell -> Integer -> Writer [(Int, Int)]
--- matScan mat toFind = mapM_ mark mat
---   where mark cell = if cellNum cell == toFind then tell
+-- TODO: make use of (//) in vector to prevent unnecessary copying
+markCellsWith :: (Integer -> Bool) -> Matrix Cell -> Matrix Cell
+markCellsWith pred (Matrix mat) = Matrix $ V.map (V.map updateCell) mat
+  where
+    updateCell (Cell {cellNum=num, cellMarked=marked}) = Cell {cellNum=num, cellMarked=marked || (pred num)}
 
 rotateMat :: Matrix a -> Matrix a
 rotateMat (Matrix mat) = Matrix $ V.fromList $ collectMat 0 (V.length (mat V.! 0)) mat
@@ -111,7 +113,7 @@ runBingo :: [Integer] -> State Gamestate (Maybe Integer)
 runBingo [] = return Nothing
 runBingo (x:xs) = do
   cards <- get
-  -- put $ map (recordNum x) cards
+  put $ map (markCellsWith ((==) x)) cards
   cards' <- get
   let scored = fmap ((*x) . unmarkedSum) (winningCard cards') in
       case scored of
@@ -127,6 +129,6 @@ main = do
   let parsed = parseInput textData in
       case parsed of
         Right result -> case (evalState (runBingo (bingoNumbers result)) (initialGamestate result)) of
-                          Just answer -> print $ show answer
+                          Just answer -> print answer
                           Nothing -> putStrLn "no winner"
-        Left err -> print $ show err
+        Left err -> print err
