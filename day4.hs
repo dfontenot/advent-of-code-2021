@@ -89,7 +89,7 @@ rotateMat (Matrix mat) = Matrix $ V.fromList $ collectMat 0 (V.length (mat V.! 0
     collectMat _ _ _ = []
 
 checkRows :: (Matrix Cell) -> Bool
-checkRows (Matrix x) = V.any (V.map (\row -> V.all cellMarked) x)
+checkRows (Matrix x) = V.any (== True) (V.map (\row -> V.all cellMarked row) x)
 
 winningCard :: Gamestate -> Maybe (Matrix Cell)
 winningCard [] = Nothing
@@ -118,4 +118,4 @@ main = do
   let parsed = parseInput textData in
       case parsed of
         Right result -> putStrLn $ show $ initialGamestate result
-        Left err -> putStrLn $ show $ err
+        Left err -> putStrLn $ show err
