@@ -3,6 +3,7 @@ module Main where
 
 import qualified Data.Vector as V
 
+import Debug.Trace
 import Data.List
 import Text.Parsec.String (Parser)
 import Text.ParserCombinators.Parsec hiding (many, State)
@@ -12,7 +13,6 @@ import Text.Parsec.Char (digit, oneOf, char)
 import Control.Applicative (many)
 import Control.Monad (void)
 import Control.Monad.State
-import Control.Monad.Writer
 
 -- types to parse into
 newtype Matrix a = Matrix (V.Vector (V.Vector a))
@@ -89,9 +89,9 @@ initialGamestate (Parsed {bingoNumbers=_, bingoCards=cards}) = map matToCells ca
 
 -- TODO: make use of (//) in vector to prevent unnecessary copying
 markCellsWith :: (Integer -> Bool) -> Matrix Cell -> Matrix Cell
-markCellsWith pred (Matrix mat) = Matrix $ V.map (V.map updateCell) mat
+markCellsWith pred' (Matrix mat) = Matrix $ V.map (V.map updateCell) mat
   where
-    updateCell (Cell {cellNum=num, cellMarked=marked}) = Cell {cellNum=num, cellMarked=marked || (pred num)}
+    updateCell (Cell {cellNum=num, cellMarked=marked}) = Cell {cellNum=num, cellMarked=marked || (pred' num)}
 
 rotateMat :: Matrix a -> Matrix a
 rotateMat (Matrix mat) = Matrix $ V.fromList $ collectMat 0 (V.length (mat V.! 0)) mat
@@ -106,29 +106,41 @@ winningCard :: Gamestate -> Maybe (Matrix Cell)
 winningCard [] = Nothing
 winningCard (x:xs) = if checkRows x || (checkRows . rotateMat) x then Just x else winningCard xs
 
+filterWinningCards :: Gamestate -> Gamestate
+filterWinningCards cards = filter (\x -> (not . checkRows) x && (not . checkRows . rotateMat) x) cards
+
 unmarkedSum :: (Matrix Cell) -> Integer
 unmarkedSum (Matrix mat) = V.sum $ V.map (\row -> V.sum (V.map (\c -> if cellMarked c then 0 else cellNum c) row)) mat
 
-runBingo :: [Integer] -> State Gamestate (Maybe Integer)
-runBingo [] = return Nothing
-runBingo (x:xs) = do
+runBingoFirstWin :: [Integer] -> State Gamestate (Maybe Integer)
+runBingoFirstWin [] = return Nothing
+runBingoFirstWin (x:xs) = do
   cards <- get
   put $ map (markCellsWith ((==) x)) cards
   cards' <- get
   let scored = fmap ((*x) . unmarkedSum) (winningCard cards') in
       case scored of
-        Nothing -> runBingo xs
+        Nothing -> runBingoFirstWin xs
         _ -> return scored
-  -- case (winningCard cards') of
-  --   Just card -> return $ Just $ (unmarkedSum card) * x
-  --   Nothing -> runBingo xs
+
+runBingoLastWinner :: [Integer] -> State Gamestate (Maybe Integer)
+runBingoLastWinner [] = return Nothing
+runBingoLastWinner (x:xs) = do
+  cards <- get
+  put $ filterWinningCards $ map (markCellsWith ((==) x)) (trace "loop" cards)
+  cards' <- get
+  case cards' of
+    [] -> return $ Just $ ((*x) . unmarkedSum) $ head (trace (show $ cards') cards)
+    --(card:[]) -> return $ Just $ ((*x) . unmarkedSum) (trace "this one" card)
+    _ -> runBingoLastWinner xs
 
 main :: IO ()
 main = do
   textData <- readFile "day4.txt"
   let parsed = parseInput textData in
       case parsed of
-        Right result -> case (evalState (runBingo (bingoNumbers result)) (initialGamestate result)) of
+        --Right result -> case (evalState (runBingoFirstWin (bingoNumbers result)) (initialGamestate result)) of
+        Right result -> case (evalState (runBingoLastWinner (bingoNumbers result)) (initialGamestate result)) of
                           Just answer -> print answer
                           Nothing -> putStrLn "no winner"
         Left err -> print err
