@@ -21,6 +21,7 @@ data Parsed = Parsed { bingoNumbers :: [Integer], bingoCards :: [Matrix Integer]
 -- gameplay types
 data Cell = Cell { cellNum :: Integer, cellMarked :: Bool }
 type Gamestate = [Matrix Cell]
+type Gamestate2 = ([Matrix Cell], Maybe Integer)
 
 instance Show Cell where
   show (Cell {cellNum=num, cellMarked=marked}) = "[" ++ (if marked then "(" ++ (show num) ++ ")" else (show num)) ++ "]"
@@ -123,16 +124,23 @@ runBingoFirstWin (x:xs) = do
         Nothing -> runBingoFirstWin xs
         _ -> return scored
 
-runBingoLastWinner :: [Integer] -> State Gamestate (Maybe Integer)
+runBingoLastWinner :: [Integer] -> State Gamestate2 (Maybe Integer)
 runBingoLastWinner [] = return Nothing
 runBingoLastWinner (x:xs) = do
-  cards <- get
-  put $ filterWinningCards $ map (markCellsWith ((==) x)) (trace "loop" cards)
-  cards' <- get
+  (cards, lastNum) <- get
+  let losers = filterWinningCards $ map (markCellsWith ((==) x)) (trace "loop" cards) in
+      put (losers, lastNum)
+  (cards', _) <- get
   case cards' of
-    [] -> return $ Just $ ((*x) . unmarkedSum) $ head (trace (show $ cards') cards)
+    [] -> case lastNum of
+            Just lastNum' -> return $ Just $ ((*lastNum') . unmarkedSum) $ head (trace (show $ cards') cards)
+            Nothing -> return $ Nothing
+    --[] -> return $ Just $ ((*x) . unmarkedSum) $ head (trace (show $ cards') cards)
     --(card:[]) -> return $ Just $ ((*x) . unmarkedSum) (trace "this one" card)
-    _ -> runBingoLastWinner xs
+    _ -> do
+      put (cards', Just x)
+      runBingoLastWinner xs
+    --_ -> (put (losers, x)) >> runBingoLastWinner xs
 
 main :: IO ()
 main = do
@@ -140,7 +148,7 @@ main = do
   let parsed = parseInput textData in
       case parsed of
         --Right result -> case (evalState (runBingoFirstWin (bingoNumbers result)) (initialGamestate result)) of
-        Right result -> case (evalState (runBingoLastWinner (bingoNumbers result)) (initialGamestate result)) of
+        Right result -> case (evalState (runBingoLastWinner (bingoNumbers result)) (initialGamestate result, Nothing)) of
                           Just answer -> print answer
                           Nothing -> putStrLn "no winner"
         Left err -> print err
