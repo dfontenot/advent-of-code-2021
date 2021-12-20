@@ -19,7 +19,7 @@ data Parsed = Parsed { bingoNumbers :: [Integer], bingoCards :: [Matrix Integer]
 
 -- gameplay types
 data Cell = Cell { cellNum :: Integer, cellMarked :: Bool }
-type Gamestate = [(Matrix Cell)]
+type Gamestate = [Matrix Cell]
 
 instance Show Cell where
   show (Cell {cellNum=num, cellMarked=marked}) = "[" ++ (if marked then "(" ++ (show num) ++ ")" else (show num)) ++ "]"
@@ -117,5 +117,7 @@ main = do
   textData <- readFile "day4.txt"
   let parsed = parseInput textData in
       case parsed of
-        Right result -> putStrLn $ show $ initialGamestate result
-        Left err -> putStrLn $ show err
+        Right result -> case (evalState (runBingo (bingoNumbers result)) (initialGamestate result)) of
+                          Just answer -> print $ show answer
+                          Nothing -> putStrLn "no winner"
+        Left err -> print $ show err
