@@ -12,6 +12,7 @@ import Text.Parsec.Char (digit, oneOf, char)
 import Control.Applicative (many)
 import Control.Monad (void)
 import Control.Monad.State
+import Control.Monad.Writer
 
 -- types to parse into
 newtype Matrix a = Matrix (V.Vector (V.Vector a))
@@ -32,6 +33,10 @@ instance (Show a) => Show (Matrix a) where
     where
       listLines = V.toList $ V.map (\line -> intercalate " " (listLine line)) lines_
       listLine line = if (null line) then ["(empty line)"] else V.toList $ V.map show line
+
+instance Foldable Matrix where
+  foldr fnc acc (Matrix mat) = let flattened = V.foldr (V.++) V.empty mat in
+                                   V.foldr fnc acc flattened
 
 -- parsing stuff
 integer :: Parser Integer
@@ -82,13 +87,17 @@ initialGamestate (Parsed {bingoNumbers=_, bingoCards=cards}) = map matToCells ca
   where
     matToCells (Matrix mat) = Matrix $ V.map (\row -> V.map (\num -> Cell { cellNum=num, cellMarked=False }) row) mat
 
-rotateMat :: (Matrix a) -> (Matrix a)
+-- matScan :: Matrix Cell -> Integer -> Writer [(Int, Int)]
+-- matScan mat toFind = mapM_ mark mat
+--   where mark cell = if cellNum cell == toFind then tell
+
+rotateMat :: Matrix a -> Matrix a
 rotateMat (Matrix mat) = Matrix $ V.fromList $ collectMat 0 (V.length (mat V.! 0)) mat
   where
-    collectMat i len mat | i <= len - 1 = (V.map (\row -> row V.! i) mat):(collectMat (i + 1) len mat)
+    collectMat i len mat' | i <= len - 1 = (V.map (\row -> row V.! i) mat'):(collectMat (i + 1) len mat')
     collectMat _ _ _ = []
 
-checkRows :: (Matrix Cell) -> Bool
+checkRows :: Matrix Cell -> Bool
 checkRows (Matrix x) = V.any (== True) (V.map (\row -> V.all cellMarked row) x)
 
 winningCard :: Gamestate -> Maybe (Matrix Cell)
