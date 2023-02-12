@@ -45,5 +45,5 @@ readBinaryBits lst = readBinaryBits' (0, 0) $ reverseList lst
 
 main :: IO ()
 main = do
-  textData <- readFile "day3.txt"
+  textData <- readFile "data/day3.txt"
   let lines_ = filter (/= "") $ lines textData in putStrLn $ show $ (readBinaryBits $ getGammaBits $ lines_) * (readBinaryBits $ getEpsilonBits $ lines_)

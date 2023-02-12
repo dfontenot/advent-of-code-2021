@@ -48,6 +48,6 @@ answer (x, y) = x * y
 
 main :: IO ()
 main = do
-  textData <- readFile "day2.txt"
+  textData <- readFile "data/day2.txt"
   putStrLn $ show $ answer $ processCommands $ map (read :: String -> Command) $ filter (/= "") $ lines textData
   putStrLn $ show $ answer $ processCommands2 $ map (read :: String -> Command) $ filter (/= "") $ lines textData

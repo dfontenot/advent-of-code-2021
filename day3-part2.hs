@@ -56,7 +56,7 @@ vecToNumber v = getFirst $ V.foldr (\bit (sum_, exp_) -> (sum_ + bit * 2 ^ exp_,
 
 main :: IO ()
 main = do
-  textData <- readFile "day3.txt"
+  textData <- readFile "data/day3.txt"
   let matrix = make2DVector $ filter (/= "") $ lines textData in
       let oxygenRatingNumber = vecToNumber $ oxygenRating $ matrix in
           let co2ScrubberRatingNumber = vecToNumber $ co2ScrubberRating $ matrix in putStrLn $ show $ oxygenRatingNumber * co2ScrubberRatingNumber
