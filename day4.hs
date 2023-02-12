@@ -94,6 +94,7 @@ markCellsWith pred' (Matrix mat) = Matrix $ V.map (V.map updateCell) mat
   where
     updateCell (Cell {cellNum=num, cellMarked=marked}) = Cell {cellNum=num, cellMarked=marked || (pred' num)}
 
+-- rotate counter clockwise
 rotateMat :: Matrix a -> Matrix a
 rotateMat (Matrix mat) = Matrix $ collectMat 0 (V.length (mat V.! 0)) mat
   where
@@ -133,7 +134,7 @@ runBingoLastWinner (x:xs) = do
   (cards', _) <- get
   case cards' of
     [] -> case lastNum of
-            Just lastNum' -> return $ Just $ ((*lastNum') . unmarkedSum) $ head (trace (show $ cards') cards)
+            Just _ -> return $ Just $ ((*(trace (show x) x)) . unmarkedSum) $ head (trace (show $ cards') cards)
             Nothing -> return $ Nothing
     --[] -> return $ Just $ ((*x) . unmarkedSum) $ head (trace (show $ cards') cards)
     --(card:[]) -> return $ Just $ ((*x) . unmarkedSum) (trace "this one" card)
