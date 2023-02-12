@@ -6,5 +6,5 @@ acc (Just depth, count) curDepth = (Just curDepth, if curDepth > depth then coun
 
 main :: IO ()
 main = do
-  textData <- readFile "day1.txt"
+  textData <- readFile "data/day1.txt"
   putStrLn $ show $ get2nd $ foldl acc (Nothing, 0) $ map (read :: String -> Int) $ filter (/= "") $ lines textData
