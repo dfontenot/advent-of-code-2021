@@ -95,10 +95,10 @@ markCellsWith pred' (Matrix mat) = Matrix $ V.map (V.map updateCell) mat
     updateCell (Cell {cellNum=num, cellMarked=marked}) = Cell {cellNum=num, cellMarked=marked || (pred' num)}
 
 rotateMat :: Matrix a -> Matrix a
-rotateMat (Matrix mat) = Matrix $ V.fromList $ collectMat 0 (V.length (mat V.! 0)) mat
+rotateMat (Matrix mat) = Matrix $ collectMat 0 (V.length (mat V.! 0)) mat
   where
-    collectMat i len mat' | i <= len - 1 = (V.map (\row -> row V.! i) mat'):(collectMat (i + 1) len mat')
-    collectMat _ _ _ = []
+    collectMat i len mat' | i <= len - 1 = collectMat (i + 1) len mat' V.++ V.singleton (V.map (V.! i) mat')
+    collectMat _ _ _ = V.empty
 
 checkRows :: Matrix Cell -> Bool
 checkRows (Matrix x) = V.any (== True) (V.map (\row -> V.all cellMarked row) x)
