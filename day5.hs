@@ -6,6 +6,7 @@ import Data.Text (Text)
 import Data.Text.IO (readFile, putStrLn)
 import Data.Void
 import Prelude hiding (readFile, putStrLn)
+import Text.Megaparsec.Debug
 import qualified Text.Megaparsec.Char.Lexer as L
 import Text.Megaparsec hiding (State)
 import Text.Megaparsec.Char
@@ -22,15 +23,15 @@ integer = lexeme L.decimal
 parseCoord :: Parser Coord
 parseCoord = do
   x <- integer
-  void $ symbol ","
+  void (symbol "," <?> "digit separator")
   y <- integer
   return (x, y)
 
 parseLine :: Parser Line
 parseLine = do
-  start <- parseCoord
-  void $ symbol "->"
-  end <- parseCoord
+  start <- parseCoord <?> "start coordinate"
+  void (symbol "->" <?> "coordinate separator")
+  end <- parseCoord <?> "end coordinate"
   return (start, end)
 
 parseFile :: Parser [Line]
@@ -40,5 +41,5 @@ main :: IO ()
 main = do
   dataContents <- readFile "data/day5-test.txt"
   case runParser parseFile "(day5 input)" dataContents of
-    Left _ -> putStrLn "fail"
+    Left err -> print err
     Right result -> print result
