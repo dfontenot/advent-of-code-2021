@@ -22,16 +22,16 @@ integer = lexeme L.decimal
 
 parseCoord :: Parser Coord
 parseCoord = do
-  x <- integer
+  x <- dbg "int" integer
   void (symbol "," <?> "digit separator")
-  y <- integer
+  y <- dbg "int" integer
   return (x, y)
 
 parseLine :: Parser Line
 parseLine = do
-  start <- parseCoord <?> "start coordinate"
+  start <- dbg "x coord" parseCoord <?> "start coordinate"
   void (symbol "->" <?> "coordinate separator")
-  end <- parseCoord <?> "end coordinate"
+  end <- dbg "y coord" parseCoord <?> "end coordinate"
   return (start, end)
 
 parseFile :: Parser [Line]
