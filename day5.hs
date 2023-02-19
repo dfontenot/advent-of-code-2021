@@ -1,16 +1,44 @@
 --{-# LANGUAGE XOverloadedStrings #-}
 module Main where
 
-import Prelude hiding (readFile, putStrLn)
-import Text.Megaparsec
-import Text.Megaparsec.Char
+import Control.Monad (void)
 import Data.Text (Text)
 import Data.Text.IO (readFile, putStrLn)
 import Data.Void
+import Prelude hiding (readFile, putStrLn)
+import qualified Text.Megaparsec.Char.Lexer as L
+import Text.Megaparsec hiding (State)
+import Text.Megaparsec.Char
+
+type Coord = (Int, Int)
+type Line = (Coord, Coord)
 
 type Parser = Parsec Void Text
+
+lexeme = L.lexeme space1
+symbol = L.symbol space1
+integer = lexeme L.decimal
+
+parseCoord :: Parser Coord
+parseCoord = do
+  x <- integer
+  void $ symbol ","
+  y <- integer
+  return (x, y)
+
+parseLine :: Parser Line
+parseLine = do
+  start <- parseCoord
+  void $ symbol "->"
+  end <- parseCoord
+  return (start, end)
+
+parseFile :: Parser [Line]
+parseFile = parseLine `sepEndBy` newline
 
 main :: IO ()
 main = do
   dataContents <- readFile "data/day5-test.txt"
-  putStrLn dataContents
+  case runParser parseFile "(day5 input)" dataContents of
+    Left _ -> putStrLn "fail"
+    Right result -> print result
