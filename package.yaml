@@ -11,11 +11,12 @@ default-extensions:
 
 dependencies:
   - base
+  - megaparsec
   - mtl
   - parsec
   - split
+  - text
   - vector
-  - megaparsec
 
 executables:
   day1:

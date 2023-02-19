@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 5eab18c94ab6247118be158b11e353267e48c5f5540d7cdb7116e5db242caa3a
 
 name:           adventofcode2021
 version:        0.0.1
@@ -16,13 +18,16 @@ executable day1
   other-modules:
       Paths_adventofcode2021
   hs-source-dirs:
-      ./
+      ./.
+  default-extensions: OverloadedStrings
   ghc-options: -Wall
   build-depends:
       base
+    , megaparsec
     , mtl
     , parsec
     , split
+    , text
     , vector
   default-language: Haskell2010
 
@@ -31,13 +36,16 @@ executable day2
   other-modules:
       Paths_adventofcode2021
   hs-source-dirs:
-      ./
+      ./.
+  default-extensions: OverloadedStrings
   ghc-options: -Wall
   build-depends:
       base
+    , megaparsec
     , mtl
     , parsec
     , split
+    , text
     , vector
   default-language: Haskell2010
 
@@ -46,13 +54,16 @@ executable day3
   other-modules:
       Paths_adventofcode2021
   hs-source-dirs:
-      ./
+      ./.
+  default-extensions: OverloadedStrings
   ghc-options: -Wall
   build-depends:
       base
+    , megaparsec
     , mtl
     , parsec
     , split
+    , text
     , vector
   default-language: Haskell2010
 
@@ -61,13 +72,16 @@ executable day3part2
   other-modules:
       Paths_adventofcode2021
   hs-source-dirs:
-      ./
+      ./.
+  default-extensions: OverloadedStrings
   ghc-options: -Wall
   build-depends:
       base
+    , megaparsec
     , mtl
     , parsec
     , split
+    , text
     , vector
   default-language: Haskell2010
 
@@ -76,12 +90,33 @@ executable day4
   other-modules:
       Paths_adventofcode2021
   hs-source-dirs:
-      ./
+      ./.
+  default-extensions: OverloadedStrings
   ghc-options: -Wall
   build-depends:
       base
+    , megaparsec
     , mtl
     , parsec
     , split
+    , text
+    , vector
+  default-language: Haskell2010
+
+executable day5
+  main-is: day5.hs
+  other-modules:
+      Paths_adventofcode2021
+  hs-source-dirs:
+      ./.
+  default-extensions: OverloadedStrings
+  ghc-options: -Wall
+  build-depends:
+      base
+    , megaparsec
+    , mtl
+    , parsec
+    , split
+    , text
     , vector
   default-language: Haskell2010

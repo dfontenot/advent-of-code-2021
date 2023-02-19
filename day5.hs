@@ -1,10 +1,11 @@
 --{-# LANGUAGE XOverloadedStrings #-}
 module Main where
 
-import Prelude hiding (readFile)
+import Prelude hiding (readFile, putStrLn)
 import Text.Megaparsec
 import Text.Megaparsec.Char
-import Data.Text (Text, readFile)
+import Data.Text (Text)
+import Data.Text.IO (readFile, putStrLn)
 import Data.Void
 
 type Parser = Parsec Void Text
