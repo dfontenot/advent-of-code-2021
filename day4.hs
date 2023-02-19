@@ -152,7 +152,7 @@ runBingoLastWinner (x:xs) = do
 
 main :: IO ()
 main = do
-  textData <- readFile "data/day4-test.txt"
+  textData <- readFile "data/day4.txt"
   let parsed = parseInput textData in
       case parsed of
         --Right result -> case (evalState (runBingoFirstWin (bingoNumbers result)) (initialGamestate result)) of
