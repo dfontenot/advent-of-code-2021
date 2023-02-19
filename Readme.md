@@ -7,4 +7,3 @@
 
 ## Status
 * day3-part2.hs is incorrect
-* day4.hs is incorrect
