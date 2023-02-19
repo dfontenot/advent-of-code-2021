@@ -16,8 +16,8 @@ type Line = (Coord, Coord)
 
 type Parser = Parsec Void Text
 
-lexeme = L.lexeme space1
-symbol = L.symbol space1
+lexeme = L.lexeme space
+symbol = L.symbol space
 integer = lexeme L.decimal
 
 parseCoord :: Parser Coord
