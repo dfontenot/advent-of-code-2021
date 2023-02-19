@@ -9,6 +9,7 @@ import Text.Parsec.String (Parser)
 import Text.ParserCombinators.Parsec hiding (many, State)
 import Text.Parsec.Combinator (many1)
 import Text.Parsec.Char (digit, oneOf, char)
+import Text.Printf (printf)
 
 import Control.Applicative (many)
 import Control.Monad (void)
@@ -24,7 +25,8 @@ type Gamestate = [Matrix Cell]
 type Gamestate2 = ([Matrix Cell], Maybe Integer)
 
 instance Show Cell where
-  show (Cell {cellNum=num, cellMarked=marked}) = "[" ++ (if marked then "(" ++ (show num) ++ ")" else (show num)) ++ "]"
+  show (Cell {cellNum=num, cellMarked=marked}) = let numFormatted = printf "%02d" num in
+                                                     "[" ++ (if marked then "(" ++ numFormatted ++ ")" else " " ++ numFormatted ++ " ") ++ "]"
 
 instance Show Parsed where
   show (Parsed {bingoNumbers=calledNumbers, bingoCards=cards}) = show calledNumbers ++ "\n" ++ (intercalate "\n\n" (map show cards))
@@ -134,10 +136,15 @@ runBingoLastWinner (x:xs) = do
   (cards', _) <- get
   case cards' of
     [] -> case lastNum of
-            Just _ -> return $ Just $ ((*(trace (show x) x)) . unmarkedSum) $ head (trace (show $ cards') cards)
+            --Just _ -> return $ Just $ ((*(trace (show x) x)) . unmarkedSum) $ head (trace (show $ cards') cards)
+            --Just res -> return $ Just $ trace ("res=" ++ show res ++ " lastNum=" ++ show lastNum ++ " x=" ++ show x ++ " sum=" ++ show (unmarkedSum (head cards)) ++ " mat=" ++ show (head cards)) 4
+            Just _ -> return $ Just $ ((unmarkedSum . (markCellsWith ((==) x)) . head) cards) * x
             Nothing -> return $ Nothing
     --[] -> return $ Just $ ((*x) . unmarkedSum) $ head (trace (show $ cards') cards)
     --(card:[]) -> return $ Just $ ((*x) . unmarkedSum) (trace "this one" card)
+    -- [last_] -> case lastNum of
+    --         Just res -> return $ Just $ trace ("res=" ++ show res ++ " x=" ++ show x ++ " lastNum=" ++ show lastNum ++ " sum=" ++ show (unmarkedSum last_) ++ " mat=" ++ show last_) 5
+    --         Nothing -> return $ Nothing
     _ -> do
       put (cards', Just x)
       runBingoLastWinner xs
