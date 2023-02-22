@@ -3,9 +3,9 @@ module Main where
 
 import Control.Monad (void)
 import Data.Text (Text)
-import Data.Text.IO (readFile, putStrLn)
+import Data.Text.IO (readFile)
 import Data.Void
-import Prelude hiding (readFile, putStrLn)
+import Prelude hiding (readFile)
 import Text.Megaparsec.Debug
 import qualified Text.Megaparsec.Char.Lexer as L
 import Text.Megaparsec hiding (State)
@@ -18,6 +18,8 @@ type Parser = Parsec Void Text
 
 lexeme = L.lexeme space
 symbol = L.symbol space
+
+integer :: Parser Int
 integer = lexeme L.decimal
 
 parseCoord :: Parser Coord
@@ -35,11 +37,11 @@ parseLine = do
   return (start, end)
 
 parseFile :: Parser [Line]
-parseFile = parseLine `sepBy` newline
+parseFile = parseLine `endBy1` newline
 
 main :: IO ()
 main = do
   dataContents <- readFile "data/day5-test.txt"
   case runParser parseFile "(day5 input)" dataContents of
-    Left err -> print err
+    Left err -> putStrLn $ errorBundlePretty err
     Right result -> print result
