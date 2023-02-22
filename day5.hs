@@ -37,7 +37,10 @@ parseLine = do
   return (start, end)
 
 parseFile :: Parser [Line]
-parseFile = parseLine `endBy1` newline
+parseFile = do
+  res <- parseLine `sepBy1` newline
+  eof
+  return res
 
 main :: IO ()
 main = do
