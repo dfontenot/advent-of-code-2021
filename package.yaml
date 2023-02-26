@@ -16,6 +16,7 @@ dependencies:
   - parsec
   - split
   - text
+  - unordered-containers
   - vector
 
 executables:
